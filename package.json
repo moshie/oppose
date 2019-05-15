@@ -1,0 +1,32 @@
+{
+  "name": "oppose",
+  "version": "1.0.0",
+  "description": "Oppose captures screenshots of internal website pages and compares them for differences",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "screenshot",
+    "compare",
+    "diff",
+    "sites",
+    "match",
+    "tool"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/moshie/oppose"
+  },
+  "author": "David Hewitt <hello@wp-unite.io> (https://way2adv.com)",
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.6.2",
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.3",
+    "mkdirp": "^0.5.1",
+    "node-line-reader": "0.0.3",
+    "puppeteer-pool": "^1.0.3",
+    "simple-node-logger": "^18.12.22"
+  }
+}
