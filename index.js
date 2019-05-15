@@ -15,5 +15,6 @@ const screenshot = camera.createImage({
 })
 
 // const comparison = compare.createComparison() TODO
+// crawler.pipe(screenshot).pipe(comparison)
 
 crawler.pipe(screenshot).pipe(process.stdout)
