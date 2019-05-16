@@ -4,6 +4,8 @@
   "description": "Oppose captures screenshots of internal website pages and compares them for differences",
   "main": "index.js",
   "scripts": {
+    "start": "node ./src/index.js",
+    "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
@@ -28,5 +30,8 @@
     "node-line-reader": "0.0.3",
     "puppeteer-pool": "^1.0.3",
     "simple-node-logger": "^18.12.22"
+  },
+  "devDependencies": {
+    "eslint": "^5.16.0"
   }
 }

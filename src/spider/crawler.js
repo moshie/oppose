@@ -77,19 +77,19 @@ class Crawler extends Readable {
      * @param {String} origin 
      */
     queueLinks(html, origin) {
-        return new Promise((resolve, reject) => {
+        return new Promise(resolve => {
             var links = parseHtml(html, this.url, origin)
 
-            links = links.filter(link => !this.visited.includes(link))
+            const unVisitedLinks = links.filter(link => !this.visited.includes(link))
 
-            this.visited = [...this.visited, ...links]
+            this.visited = [...this.visited, ...unVisitedLinks]
     
-            links.forEach(url => {
+            unVisitedLinks.forEach(url => {
                 this.push(url)
                 this.queue.push({ url })
             })
     
-            resolve(links)
+            resolve(unVisitedLinks)
         })
     }
 

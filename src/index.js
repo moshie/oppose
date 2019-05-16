@@ -1,15 +1,17 @@
 'use strict'
 
-const spider = require('./src/spider')
-const camera = require('./src/camera')
+const path = require('path')
+
+const spider = require('./spider')
+const camera = require('./camera')
 // const compare = require('./src/compare')
 
-const crawler = spider.createWeb('http://indigotree.co.uk')
+const crawler = spider.createWeb('https://www.beausynergy.co.uk/')
 
 const screenshot = camera.createImage({
     environments: {
-        live: 'https://indigotree.co.uk',
-        master: 'https://test.indigotree.co.uk'
+        live: 'https://www.beausynergy.co.uk/',
+        master: 'http://beausynergy01.wpengine.com/'
     },
     path: path.join(process.cwd(), 'screenshots')
 })

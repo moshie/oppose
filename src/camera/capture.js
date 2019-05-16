@@ -36,8 +36,8 @@ class Capture extends Transform {
                     return reject(error)
                 }
 
-                resolve();
-            });
+                resolve()
+            })
         })
     }
 
@@ -63,12 +63,12 @@ class Capture extends Transform {
         var pathname = url.parse(link).pathname
 
         if (pathname == '/') {
-            return 'home';
+            return 'home'
         }
 
-        pathname = pathname.startsWith('/') ? pathname.slice(1) : pathname;
+        pathname = pathname.startsWith('/') ? pathname.slice(1) : pathname
 
-        pathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname;
+        pathname = pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
 
         return pathname.replace(/\//g, '_').replace(/\./g, '-')
     }
@@ -83,7 +83,7 @@ class Capture extends Transform {
     _transform(chunk, enc, callback) {
 
         const browsers = Object.keys(this.environments).map(env => {
-            return this.pools[env].use(async (browser) => {
+            return this.pools[env].use(async browser => {
                 const page = await browser.newPage()
 
                 var link = this.mergeUrl(this.environments[env], chunk.toString())
@@ -106,7 +106,7 @@ class Capture extends Transform {
                 // Screenshot the page
                 await page.screenshot({
                     path: file
-                });
+                })
     
                 await page.close()
                 return file
@@ -139,7 +139,7 @@ class Capture extends Transform {
 
         Promise.all(browser)
             .then(() => callback())
-            .catch((error) => callback(error))
+            .catch(error => callback(error))
     }
 
 }
