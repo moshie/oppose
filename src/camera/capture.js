@@ -4,7 +4,10 @@ const url = require('url')
 const path = require('path')
 const mkdirp = require('mkdirp')
 const { Transform } = require('stream')
-const createPuppeteerPool = require('puppeteer-pool')
+
+const log = require('simple-node-logger').createSimpleFileLogger('project.log')
+
+// https://github.com/thomasdondorf/puppeteer-cluster
 
 class Capture extends Transform {
 
@@ -13,15 +16,12 @@ class Capture extends Transform {
      * 
      * @param {Object} options 
      */
-    constructor(options = {}) {
+    constructor(cluster, options = {}) {
+        options.objectMode = true
         super(options)
         this.environments = options.environments
-        this.path = path
-
-        this.pools = {}
-        Object.keys(options.environments).forEach(env => {
-            this.pools[env] = createPuppeteerPool()
-        })
+        this.path = options.path
+        this.cluster = cluster
     }
 
     /**
@@ -82,48 +82,56 @@ class Capture extends Transform {
      */
     _transform(chunk, enc, callback) {
 
-        const browsers = Object.keys(this.environments).map(env => {
-            return this.pools[env].use(async browser => {
-                const page = await browser.newPage()
+        //console.log(chunk.toString());
 
-                var link = this.mergeUrl(this.environments[env], chunk.toString())
+        async function asyncForEach(array, callback) {
+            for (let index = 0; index < array.length; index++) {
+                await callback(array[index], index, array);
+            }
+        }
 
-                const status = await page.goto(link)
-    
-                if (!status.ok) {
-                    throw new Error(`cannot open ${chunk.toString()}`)
-                }
+        (async () => {
+            const envs = Object.keys(this.environments)
+            const files = Object.assign({}, this.environments)
 
-                // Create folder for environment
-                var folderPath = path.join(this.path, env)
-                await this.createDirectory(folderPath)
+            // Screenshot task
+            await this.cluster.task(async ({ page, data }) => {
 
-                // Build filename from link
-                const niceName = this.urlToFilename(link)
-                const filename = `${niceName}.png`
-                const file = path.join(folderPath, filename)
-    
-                // Screenshot the page
+                await page.goto(data.link);
+
                 await page.screenshot({
-                    path: file
-                })
-    
-                await page.close()
-                return file
-            })
-        })
+                    path: data.file,
+                    fullPage: true
+                });
 
-        Promise.all(browsers)
-            .then(files => {
-                callback(
-                    null, 
-                    Object.keys(this.environments).reduce((acc, current, index) => {
-                        acc[current] = files[index]
-                        return acc
-                    }, {})
+                return data.file
+            });
+
+            await asyncForEach(envs, async env => {
+                const root = this.environments[env];
+
+                // Create Screenshots Directory
+                await this.createDirectory(
+                    path.join(this.path, env)
                 )
+
+                const link = this.mergeUrl(root, chunk.toString())
+                const file = path.join(this.path, env, `${this.urlToFilename(link)}.png`)
+
+                // Queue the screenshot task
+                await this.cluster.queue({ link, file })
+
+                files[env] = file
             })
-            .catch(error => callback(error))
+
+
+            return files;
+        })()
+            .then(files => callback(null, files))
+            .catch(error => {
+                log.error(error);
+                callback(error)
+            })
     }
 
     /**
@@ -132,12 +140,10 @@ class Capture extends Transform {
      * @param {Function} callback 
      */
     _flush(callback) {
-        const browser = Object.keys(this.environments).map(env => {
-            return this.pools[env].drain()
-                .then(() => this.pools[env].clear())
-        })
-
-        Promise.all(browser)
+        (async () => {
+            await this.cluster.idle()
+            await this.cluster.close()
+        })()
             .then(() => callback())
             .catch(error => callback(error))
     }
