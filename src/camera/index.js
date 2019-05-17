@@ -7,8 +7,12 @@ async function createImage(options) {
 
     const cluster = await Cluster.launch({
         concurrency: Cluster.CONCURRENCY_CONTEXT,
-        maxConcurrency: options.concurrency || 2,
+        maxConcurrency: options.concurrency || 2
     })
+
+    cluster.on('taskerror', (err, data) => {
+        console.log(`  Error crawling ${data}: ${err.message}`);
+    });
 
     return new Capture(cluster, options)
 }

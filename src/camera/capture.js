@@ -82,8 +82,6 @@ class Capture extends Transform {
      */
     _transform(chunk, enc, callback) {
 
-        //console.log(chunk.toString());
-
         async function asyncForEach(array, callback) {
             for (let index = 0; index < array.length; index++) {
                 await callback(array[index], index, array);
@@ -95,7 +93,7 @@ class Capture extends Transform {
             const files = Object.assign({}, this.environments)
 
             // Screenshot task
-            await this.cluster.task(async ({ page, data }) => {
+            const takeScreenshot = async ({ page, data }) => {
 
                 await page.goto(data.link);
 
@@ -105,7 +103,7 @@ class Capture extends Transform {
                 });
 
                 return data.file
-            });
+            };
 
             await asyncForEach(envs, async env => {
                 const root = this.environments[env];
@@ -118,8 +116,11 @@ class Capture extends Transform {
                 const link = this.mergeUrl(root, chunk.toString())
                 const file = path.join(this.path, env, `${this.urlToFilename(link)}.png`)
 
+                // log.info(link)
+                // log.info(file)
+
                 // Queue the screenshot task
-                await this.cluster.queue({ link, file })
+                await this.cluster.queue({ link, file }, takeScreenshot)
 
                 files[env] = file
             })
@@ -127,7 +128,10 @@ class Capture extends Transform {
 
             return files;
         })()
-            .then(files => callback(null, files))
+            .then(files => {
+                log.info(files);
+                callback(null, files)
+            })
             .catch(error => {
                 log.error(error);
                 callback(error)

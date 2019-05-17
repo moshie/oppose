@@ -1,6 +1,0 @@
-15:19:10.232 ERROR {"transformRequest":{},"transformResponse":{},"timeout":0,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN","maxContentLength":-1,"headers":{"Accept":"application/json, text/plain, */*","User-Agent":"axios/0.18.0"},"method":"get","url":"https://www.beausynergy.co.uk/skin-treatments/skin-tightening"} 
-15:19:10.232 ERROR Request failed with status code 504 
-15:19:10.253 ERROR {"transformRequest":{},"transformResponse":{},"timeout":0,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN","maxContentLength":-1,"headers":{"Accept":"application/json, text/plain, */*","User-Agent":"axios/0.18.0"},"method":"get","url":"https://www.beausynergy.co.uk/skin-treatments/stretch-mark-removal"} 
-15:19:10.253 ERROR Request failed with status code 504 
-15:19:10.345 ERROR {"transformRequest":{},"transformResponse":{},"timeout":0,"xsrfCookieName":"XSRF-TOKEN","xsrfHeaderName":"X-XSRF-TOKEN","maxContentLength":-1,"headers":{"Accept":"application/json, text/plain, */*","User-Agent":"axios/0.18.0"},"method":"get","url":"https://www.beausynergy.co.uk/skin-treatments/cryolift"} 
-15:19:10.345 ERROR Request failed with status code 504 
