@@ -7,8 +7,6 @@ const { Transform } = require('stream')
 
 const log = require('simple-node-logger').createSimpleFileLogger('project.log')
 
-// https://github.com/thomasdondorf/puppeteer-cluster
-
 class Capture extends Transform {
 
     /**
@@ -82,9 +80,9 @@ class Capture extends Transform {
      */
     _transform(chunk, enc, callback) {
 
-        async function asyncForEach(array, callback) {
+        const asyncForEach = async (array, callback) => {
             for (let index = 0; index < array.length; index++) {
-                await callback(array[index], index, array);
+                await callback(array[index], index, array)
             }
         }
 
@@ -93,20 +91,20 @@ class Capture extends Transform {
             const files = Object.assign({}, this.environments)
 
             // Screenshot task
-            const takeScreenshot = async ({ page, data }) => {
+            await this.cluster.task(async ({ page, data }) => {
 
-                await page.goto(data.link);
+                await page.goto(data.link)
 
                 await page.screenshot({
                     path: data.file,
                     fullPage: true
-                });
+                })
 
                 return data.file
-            };
+            })
 
             await asyncForEach(envs, async env => {
-                const root = this.environments[env];
+                const root = this.environments[env]
 
                 // Create Screenshots Directory
                 await this.createDirectory(
@@ -120,20 +118,19 @@ class Capture extends Transform {
                 // log.info(file)
 
                 // Queue the screenshot task
-                await this.cluster.queue({ link, file }, takeScreenshot)
+                await this.cluster.queue({ link, file })
 
                 files[env] = file
             })
 
-
             return files;
         })()
             .then(files => {
-                log.info(files);
+                log.info(files)
                 callback(null, files)
             })
             .catch(error => {
-                log.error(error);
+                log.error(error)
                 callback(error)
             })
     }
