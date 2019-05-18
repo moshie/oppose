@@ -80,8 +80,6 @@ class Capture extends Transform {
      */
     _transform(chunk, enc, callback) {
 
-        log.info(chunk.toString())
-
         const asyncForEach = async (array, cb) => {
             for (let i = 0; i < array.length; i++) {
                 await cb(array[i], i, array)
