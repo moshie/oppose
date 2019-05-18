@@ -80,28 +80,17 @@ class Capture extends Transform {
      */
     _transform(chunk, enc, callback) {
 
-        const asyncForEach = async (array, callback) => {
-            for (let index = 0; index < array.length; index++) {
-                await callback(array[index], index, array)
+        log.info(chunk.toString())
+
+        const asyncForEach = async (array, cb) => {
+            for (let i = 0; i < array.length; i++) {
+                await cb(array[i], i, array)
             }
         }
 
         (async () => {
             const envs = Object.keys(this.environments)
             const files = Object.assign({}, this.environments)
-
-            // Screenshot task
-            await this.cluster.task(async ({ page, data }) => {
-
-                await page.goto(data.link)
-
-                await page.screenshot({
-                    path: data.file,
-                    fullPage: true
-                })
-
-                return data.file
-            })
 
             await asyncForEach(envs, async env => {
                 const root = this.environments[env]
@@ -118,12 +107,13 @@ class Capture extends Transform {
                 // log.info(file)
 
                 // Queue the screenshot task
-                await this.cluster.queue({ link, file })
+                log.info(`ADDED TO QUEUE: ${link}`)
+                await this.cluster.execute({ url: link, file })
 
                 files[env] = file
             })
 
-            return files;
+            return files
         })()
             .then(files => {
                 log.info(files)
@@ -142,6 +132,7 @@ class Capture extends Transform {
      */
     _flush(callback) {
         (async () => {
+            log.info('DRAINED')
             await this.cluster.idle()
             await this.cluster.close()
         })()

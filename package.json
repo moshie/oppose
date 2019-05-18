@@ -4,7 +4,7 @@
   "description": "Oppose captures screenshots of internal website pages and compares them for differences",
   "main": "index.js",
   "scripts": {
-    "start": "node ./src/index.js",
+    "start": "DEBUG='puppeteer-cluster:*' node ./src/index.js",
     "lint": "eslint src",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -28,8 +28,8 @@
     "cheerio": "^1.0.0-rc.3",
     "mkdirp": "^0.5.1",
     "node-line-reader": "0.0.3",
+    "puppeteer": "^1.16.0",
     "puppeteer-cluster": "^0.16.0",
-    "puppeteer-pool": "^1.0.3",
     "simple-node-logger": "^18.12.22"
   },
   "devDependencies": {

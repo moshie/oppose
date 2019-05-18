@@ -6,25 +6,29 @@ const spider = require('./spider')
 const camera = require('./camera')
 // const compare = require('./src/compare')
 
+const log = require('simple-node-logger').createSimpleFileLogger('project.log')
+
+const live = 'https://www.beausynergy.co.uk/'
+const test = 'http://beausynergy01.wpengine.com/'
+
+
 try {
     (async () => {
 
-        const crawler = spider.createWeb('https://www.beausynergy.co.uk/')
+        const crawler = spider.createWeb(live)
 
         const screenshot = await camera.createImage({
-            environments: {
-                live: 'https://www.beausynergy.co.uk/',
-                master: 'http://beausynergy01.wpengine.com/'
-            },
+            environments: { live, test },
             path: path.join(process.cwd(), 'screenshots')
         })
 
 
         crawler.pipe(screenshot)
+        // crawler.pipe(process.stdout)
 
     })()
-} catch(e) {
-    console.log(e);
+} catch(error) {
+    log.error(error)
 }
 
 
