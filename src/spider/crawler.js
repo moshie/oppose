@@ -27,25 +27,17 @@ class Crawler extends Readable {
      * Crawler Read Method
      */
     _read() {
-        var stream = this
+        log.debug('Crawler Started')
+        log.debug(`Crawling: ${this.url}`)
+        log.debug(`Concurrency: ${this.concurrency}`)
 
         if (this.queue === null) {
-            log.debug('Crawler Started')
-            log.debug(`Url: ${this.url}`)
-            log.debug(`Concurrency: ${this.concurrency}`)
-
-            this.queue = queue(
-                function (task, cb) {
-                    axios.get(task.url)
-                        .then(response => stream.queueLinks(response.data, task.url))
-                        .then(() => cb())
-                        .catch(err => cb(err))
-                }, 
-                this.concurrency
-            )
+            this.queue = queue(async task => {
+                return axios.get(task.url)
+                    .then(response => this.queueLinks(response.data, task.url))
+            }, this.concurrency)
 
             this.queue.push({ url: this.url })
-            this.index++
 
             this.queue.drain = () => this.drain()
             this.queue.error = error => this.error(error)

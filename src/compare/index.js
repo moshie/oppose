@@ -2,8 +2,7 @@
 
 const Compare = require('./compare')
 
-async function createComparison(options = {}) {
-
+function createComparison(options = {}) {
     return new Compare(options)
 }
 

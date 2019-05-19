@@ -5,17 +5,19 @@ const camera = require('./camera')
 const compare = require('./compare')
 
 const log = require('simple-node-logger').createSimpleFileLogger('project.log')
+const path = require('path')
+
 
 const live = 'https://www.beausynergy.co.uk/'
 const test = 'http://beausynergy01.wpengine.com/'
-
+const folder = path.join(process.cwd(), 'screenshots')
 /*
 
 TODO:
 
 - Options for the capture / puppeteer
 - Options for Crawler
-- Compare Stream
+- Options for blink diff
 - Use async / await
 - Tests
 - Performance improvements
@@ -23,69 +25,24 @@ TODO:
 - Handle errors better than just logging
 - Documentation
 - CLI Wrapper
-- 
+- Emit event when a comparison fails
 */
-
-const { Readable } = require('stream')
-const fs = require('fs')
-const path = require('path')
-
-const filesStream = new Readable({
-
-    objectMode: true,
-
-    read() {
-        const stream = this
-        const p = path.join(process.cwd(), 'screenshots', 'live')
-
-        fs.readdir(p, function (err, f) {
-            if (err) {
-                return log.error(err)
-            }
-
-            f.forEach(file => {
-                if (file === '.' || file === '..') {
-                    return true
-                }
-                stream.push({
-                    live: path.join(process.cwd(), 'screenshots', 'live', file),
-                    test: path.join(process.cwd(), 'screenshots', 'test', file)
-                })
-            })
-
-            stream.push(null)
-
-        })
-    }
-
-})
-
-
-
-
-
-
 
 try {
     (async () => {
 
-        // const crawler = spider.createWeb(live)
+        const crawler = spider.createWeb(live)
 
-        // const screenshot = await camera.createImage({
-        //     environments: { live, test },
-        //     path: path.join(process.cwd(), 'screenshots')
-        // })
-
-        const comparison = await compare.createComparison({
-            path: path.join(process.cwd(), 'screenshots')
+        const screenshot = await camera.createImage({
+            environments: { live, test },
+            path: folder
         })
 
+        const comparison = compare.createComparison({
+            path: folder
+        })
 
-        // crawler.pipe(screenshot).pipe(comparison)
-
-        filesStream.pipe(comparison)
-
-
+        crawler.pipe(screenshot).pipe(comparison)
     })()
 } catch(error) {
     log.error(error)
