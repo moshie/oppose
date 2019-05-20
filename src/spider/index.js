@@ -1,17 +1,15 @@
 'use strict'
 
 const Crawler = require('./crawler')
+const validate = require('./validate')
 
-function createWeb({ url, concurrency = 2 }) {
-    if (!url) {
-        throw new Error('Provide a url to crawl')
-    }
+function createWeb(options) {
 
-    if (typeof concurrency !== 'number' && concurrency <= 50 && concurrency >= 1) {
-        throw new Error('Concurrency must be a number between 1 - 50')
-    }
+    options.concurrency = parseInt(options.concurrency)
 
-    return new Crawler({ url, concurrency })
+    validate(options)
+
+    return new Crawler(options)
 }
 
 module.exports = {

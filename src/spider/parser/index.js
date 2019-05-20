@@ -8,7 +8,7 @@ const relativeToAbsolute = require('./relative-to-absolute')
 const removeHashFromUrl = require('./remove-hash-from-url')
 const hasInvalidExtension = require('./has-invalid-extension')
 
-function parseHtml(html, peusdoUrl, origin) {
+function parse(html, peusdoUrl, origin) {
 
     const $ = cheerio.load(html)
 
@@ -47,4 +47,4 @@ function parseHtml(html, peusdoUrl, origin) {
     return urls
 }
 
-module.exports = parseHtml
+module.exports = parse

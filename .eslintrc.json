@@ -29,6 +29,7 @@
         "arrow-parens": [
             "error",
             "as-needed"
-        ]
+        ],
+        "no-console": "off"
     }
 }

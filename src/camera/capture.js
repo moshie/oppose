@@ -15,12 +15,12 @@ class Capture extends Transform {
      * 
      * @param {Object} options 
      */
-    constructor(cluster, options = {}) {
-        options.objectMode = true
-        super(options)
-        this.environments = options.environments
-        this.directory = options.directory
-        this.type = options.type
+    constructor(cluster, { environments, directory, screenshot = {}}) {
+        super({ objectMode: true })
+
+        this.environments = environments
+        this.directory = directory
+        this.type = screenshot.type || 'png'
         this.cluster = cluster
     }
 
