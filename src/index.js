@@ -28,14 +28,90 @@ TODO:
 - Emit event when a comparison fails
 */
 
+
+/*
+
+Crawler
+{
+    url: 'http...',
+    concurrency: 2
+}
+
+
+Screenshot
+{
+    environments: { live: '', test: '' },
+    path: folder
+    concurrency: 2,
+    type: 'jpeg' | 'png',
+    quality: 80,
+    fullPage: true|false,
+    clip: {
+        x: 0,
+        y: 0,
+        width: 1000,
+        height: 1000
+    },
+    omitBackground: false
+}
+
+Comparison
+{
+    path: folder,
+    verbose: false,
+    thresholdType: 'pixel' / 'percent',
+    threshold: 0.2, // 20%
+    delta: 20,
+
+    mask: {
+        r: 255,
+        g: 255'
+        b: 255,
+        a: 255,
+        o: 0.7
+    },
+
+    shift: {
+        r: 255,
+        g: 255'
+        b: 255,
+        a: 255,
+        o: 0.7
+    }
+
+    background: {
+        r: 255,
+        g: 255'
+        b: 255,
+        a: 255,
+        o: 0.7
+    }
+
+    filter: 'blur',
+    composition: true,
+    composeLeftToRight: true,
+    composeTopToBottom: false,
+    perceptual: false
+    gamma: {
+        r: 255,
+        g: 255'
+        b: 255
+    }
+}
+
+*/
+
 try {
     (async () => {
 
-        const crawler = spider.createWeb(live)
+        const crawler = spider.createWeb({
+            url: live,
+            concurrency: 2
+        })
 
         const screenshot = await camera.createImage({
             environments: { live, test },
-            path: folder
+            directory: folder
         })
 
         const comparison = compare.createComparison({

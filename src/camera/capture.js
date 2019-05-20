@@ -4,6 +4,7 @@ const url = require('url')
 const path = require('path')
 const mkdirp = require('mkdirp')
 const { Transform } = require('stream')
+const asyncForEach = require('../helpers/async-for-each')
 
 const log = require('simple-node-logger').createSimpleFileLogger('project.log')
 
@@ -18,7 +19,8 @@ class Capture extends Transform {
         options.objectMode = true
         super(options)
         this.environments = options.environments
-        this.path = options.path
+        this.directory = options.directory
+        this.type = options.type
         this.cluster = cluster
     }
 
@@ -79,13 +81,6 @@ class Capture extends Transform {
      * @param {Function} callback 
      */
     _transform(chunk, enc, callback) {
-
-        const asyncForEach = async (array, cb) => {
-            for (let i = 0; i < array.length; i++) {
-                await cb(array[i], i, array)
-            }
-        }
-
         (async () => {
             const envs = Object.keys(this.environments)
             const files = Object.assign({}, this.environments)
@@ -95,17 +90,13 @@ class Capture extends Transform {
 
                 // Create Screenshots Directory
                 await this.createDirectory(
-                    path.join(this.path, env)
+                    path.join(this.directory, env)
                 )
 
                 const link = this.mergeUrl(root, chunk.toString())
-                const file = path.join(this.path, env, `${this.urlToFilename(link)}.png`)
-
-                // log.info(link)
-                // log.info(file)
+                const file = path.join(this.directory, env, `${this.urlToFilename(link)}.${this.type}`)
 
                 // Queue the screenshot task
-                log.info(`ADDED TO QUEUE: ${link}`)
                 await this.cluster.execute({ url: link, file })
 
                 files[env] = file
